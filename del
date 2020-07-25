@@ -1,7 +1,7 @@
 #!/bin/bash
 #created on: Sat Jul 25 06:41:29 IST 2020
 #version 0.01
-#a safe implementation of rm command
+#a safe delete commmand implementation using rm command
 
 function help() {
 	printf "help: "
