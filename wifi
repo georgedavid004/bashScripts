@@ -1,0 +1,40 @@
+#!/bin/bash
+#created on: Fri Jul 24 18:22:48 IST 2020
+
+printf "wifi: "
+arg="$1"
+arg=`echo $arg | tr [:upper:] [:lower:]`
+
+if [ $# == 0 ]
+	then 
+		str=`rfkill | grep wlan | head -n1`
+
+		#checking if wifi is on/off	
+		for i in ${str[@]}
+			do
+				if [ $i == "blocked" ]
+					then
+						echo "wifi off"
+						break
+				elif [ $i == "unblocked" ]
+					then 
+						echo "wifi on"
+						break
+				fi
+			done
+
+		echo "to change wifi state use argument(on/off)" 1>&2 #output messege using stderr
+
+	elif [ $arg  == "on" ]
+		then 
+			rfkill unblock wlan
+			echo "wlan turned on"
+
+	elif [ $arg == "off" ]
+		then 
+			rfkill block wlan
+			echo "wlan turned off"
+
+	else
+		echo "Warninng: Argument should be \"on/off\""	1>&2
+fi

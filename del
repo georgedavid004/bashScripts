@@ -1,0 +1,137 @@
+#!/bin/bash
+#created on: Sat Jul 25 06:41:29 IST 2020
+#version 0.01
+#a safe implementation of rm command
+
+function help() {
+	printf "help: "
+
+	printf "\tdel is a replacement for \"rm\" which is considered to be a dangerous program\n"
+	
+	printf "syntax:\n"
+	printf "\tdel [-h] file1 file2 ...\n"
+		
+	echo "options:"
+	printf "\t-h, --help: show help\n"
+	printf "\t-p, --purge: empty trash\n"
+	printf "\t-r: remove one item from trash\n"
+	printf "\t-v, --view: show trash\n"
+	
+	echo		
+	exit 0 #exit after displaying help
+}
+
+function deleteAll() {
+		if [ $res = 'y' ]
+			then
+				echo "removing" ;
+				ls -l $DIR/
+				ls -l $HOME/.TRASH.[[:alnum:]_]*; #listing hidden
+				/bin/rm $HOME/.TRASH/.[[:alnum:]_]* -r #removing hidden files
+				/bin/rm $DIR/* -r #removing files
+		else
+			echo "quiting without removing"
+		fi
+		
+		exit 0 #exit after removing all
+}
+
+function purge() {
+	#this deletes files permanently
+	printf  "Do you want to clean trash permanantly? [y/n]"
+	read res 
+
+	DIR="$HOME/.TRASH"
+
+	if [ $res == "y" ]
+		then 
+			#do nothing
+			if [ -d $DIR ] #if file exists
+				then	
+					deleteAll
+				else
+					mkdir $HOME/.TRASH	
+					deleteAll
+			fi
+		else
+			exit  0
+	fi
+
+	return
+}
+
+function view() {
+	if [ -d $HOME/.TRASH ]
+		then
+			ls -l $HOME/.TRASH/
+			echo __________________
+			echo disk usage: `du $HOME/.TRASH -h| tail -n1 | cut --delimiter="/" -f1`
+			echo __________________
+		else
+			echo "Trash Empty" 
+	fi
+}
+
+function viewLog() { #view log
+	
+	if [ -e $HOME/.TRASH/log ]
+		then
+			cat $HOME/.TRASH/log
+	fi
+}
+
+#move files to trash
+function remove() {
+	if [ -d $HOME/.TRASH ]	
+		then
+			DIRECTORY="$HOME/.TRASH"
+			mv $@ $DIRECTORY && echo "from `pwd`/$@ --> \"$DIRECTORY\""  | tee  $DIRECTORY/log
+		else
+			mkdir $HOME/.TRASH
+			DIRECTORY="$HOME/.TRASH"
+			mv $@ $DIRECTORY && echo "from `pwd`/$@ --> \"$DIRECTORY\""  | tee  $DIRECTORY/log	
+	fi 
+}
+
+#remove one item from trash
+function  oneTrash() {
+	printf "do you want to delete $@ permanently [y/n]: "
+	read result 
+		
+	if [ $result == "y" ] 
+		then
+			/bin/rm $HOME/.TRASH/$@
+		else
+			echo "aborting..."
+	fi
+}
+
+#script starts here
+
+echo "del: "
+arg1=$1
+
+DIRECTORY=$HOME/.TRASH #Trash directory
+
+if [ $# -le 0 ] #if no argument passed
+	then
+		echo "Warning: Argnument requuired"
+	
+	else 
+		case $1 in 
+			"-h")	help
+				;;
+			"-p"|"--purge") purge
+				;;
+			"-v"|"--view") view $@
+				;;
+			"-l"|"--log") viewLog
+				;;
+			"-r") oneTrash $2
+				;;
+			*) remove $@
+		esac
+fi
+
+#
+#mv $@ $DIRECTORY && echo "$@ moving from `pwd` --> \"$DIRECTORY\""  >>  $DIRECTORY/log

@@ -1,0 +1,19 @@
+#!/bin/bash
+#created on: Tue Feb 11 00:06:37 IST 2020
+
+MAX_B="/sys/class/backlight/intel_backlight/max_brightness"
+CUR_B="/sys/class/backlight/intel_backlight/brightness"
+
+echo "------------------";
+printf "current brightness: ";
+#more /sys/class/backlight/intel_backlight/brightness;
+more $CUR_B
+#echo "------------------";
+echo "make sure you have super user access!!!";
+echo "------------------";
+
+printf "change brightness[range:0-`cat $MAX_B`]: ";
+read BRIGHTNESS;
+
+#sudo echo $BRIGHTNESS > /sys/class/backlight/intel_backlight/brightness;
+sudo echo $BRIGHTNESS > $CUR_B

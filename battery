@@ -1,0 +1,5 @@
+#!/bin/bash
+#Author David
+#this script is to check battery percentage on your laptop
+
+upower -i $(upower -e | grep '/battery')

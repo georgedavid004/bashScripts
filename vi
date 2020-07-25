@@ -1,0 +1,86 @@
+#!/bin/bash
+
+#vim for python
+
+input=`echo $@ |rev| cut -d '.' -f 1  | rev`;
+
+#the following funtion changes string in lower case to string in upper case
+upper()
+{
+	echo $1 | cut -d'.' -f 1-2 --output-delimiter="_" | tr [:lower:] [:upper:] #tr converts lower to upper and print it in std output
+}
+#the following line if for if no argument given
+if [ $# == 0 ]
+	then
+		vim;
+
+#following code is for files with *.py extension
+elif [ $input == "py" ]
+	then 
+		if [ -f $@ ] 		#file exists
+			then 
+				vim $@ #open the file with vim
+		else
+			#creating new file with vim including template
+		#	touch $@ && echo -e "#!/usr/bin/python3" > $@ && echo $@ "created";
+			touch $@ && echo -e "#!/home/george/David/Python/Vev/bin/python3"> $@;
+			#adding date and time
+			echo -e "#author: David \t created on: `date` " >> $@ ;
+			chmod u+x $@ && echo "changing to run mode ";
+			vim $@;
+		fi 
+#following code is for c/c++
+elif [ $input == "c" ]
+	then 
+		if [ -f $@ ] #if file exists
+			then vim $@ #open the file with vim
+		else
+			#create new *.c file
+			touch $@ && echo -e "#include <stdio.h>\n\nint main()\n{\n\n\treturn 0;\n}"> $@;
+			vim $@;
+		fi
+
+elif  [ $input == "cpp" ] || [ $input == "cc" ]  
+	then 
+		if [ -f $@ ] #if file exists
+			then vim $@ #open the file with vim
+		else
+			#create new *.c file
+			touch $@ && echo -e "#include <iostream>\n\nint main()\n{\n\n\treturn 0;\n}"> $@;
+			vim $@;
+		fi
+
+#following code is for c/c++ header files
+elif [ $input == "h" ]
+	then
+		if [ -f $@ ] #if file exists 
+			then 
+				vim $@ #opens the existing file with vim
+		else
+			#create new file
+			touch $@;
+			#adding header file templates to the file
+			echo -e "#ifndef  `upper "$@"`" >> $@;
+			echo -e "#define  `upper "$@"`" >> $@;
+			echo -e "\n#endif">>$@;
+			vi $@; #opens given file
+		fi
+			
+#folloing code is for bash script
+elif [ $input == "sh" ]
+	then 
+		if [ -f $@ ] #if file exists
+			then 
+				vim $@ 	#open the existing file with vim
+		else
+			#create new file with template
+			touch $@ && echo -e "#!/bin/bash\n#created on: `date`">>$@;
+			chmod u+x $@;
+			vim $@;
+		fi				
+#following code is for files with no extensions/other extensions
+else
+	vim $@
+
+fi
+
